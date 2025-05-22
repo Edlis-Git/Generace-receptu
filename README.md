@@ -1,4 +1,5 @@
 #CZ
+
 ##Anotace:
 Webová aplikace, která umožní uživatelovi zadat ingredience, objem či kvantitu ingrediencí, shodu vyhledání v závislosti na ingrediencích a kategorií receptu program vrátí jídla a postupy jak je uvařit, které splňují zadání, z velkého množství receptů v databázi.
 
@@ -8,6 +9,7 @@ Aplikace je aktuálně nasazena na AWS a běží na backendovém serveru postave
 ----------------------------------------------
 
 #EN
+
 ##Annotation:
 A web application that allows users to input ingredients, the quantity or volume of ingredients, and specify matching criteria based on ingredients and recipe categories. The program then returns meals and cooking instructions that meet the specified requirements, selected from a large number of recipes stored in a database.
 
