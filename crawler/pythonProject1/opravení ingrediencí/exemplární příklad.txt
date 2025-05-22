@@ -1,0 +1,21 @@
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = 'kuřecí maso')); 
+
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = 'vejce'));
+
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = 'česnek')); 
+
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = 'hořčice')); 
+
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = '1 lžíce sojová omáčka'));
+
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = '1 lžíce worcestrová omáčka')); 
+
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = 'paprika')); 
+
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = '1 lžíce škrob kukuřičný')); 
+
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = 'sůl'));
+
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = '80 g strouhanka na obalení')); 
+
+INSERT INTO RecipeIngredients (RecipeID, IngredientID) VALUES ((SELECT RecipeID FROM Recipes WHERE RecipeName = 'Nakládané řízky'), (SELECT IngredientID FROM Ingredients WHERE IngredientName = 'slunečnicový olej na smažení'));

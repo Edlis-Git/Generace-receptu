@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generátor receptů</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .dark-mode button {
+            background-color: #333333;
+            color: #ffffff;
+        }
+        .dark-mode select, .dark-mode input {
+            background-color: #333333;
+            color: #ffffff;
+        }
+        .dark-mode label {
+            color: #ffffff;
+        }
+        #darkModeToggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .quantity{
+            width: calc(10%);
+            max-width: 50px;
+            margin-left: 15px;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {/*hides arrows in elements with quantity class*/
+        -webkit-appearance: none;
+        margin: 0;
+        }
+        #ingredients{
+            margin: 20px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding: 50px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
+        #square{
+            border-style: solid;
+            border-width: 1px;
+            border-color: gray;
+            padding: 10px;
+            display: inline-block;
+        }
+        #recipes{
+            margin: 20px;
+            max-height: 450px;
+            padding: 10px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="dark-mode">
+    <button id="darkModeToggle">Light Mode</button>
+    <div class="container">
+        <h1>Generátor receptů</h1>
+        <hr>
+        <div id="filter-section">
+            <label for="category">Kategorie:</label>
+            <select id="category"></select>
+            <br>
+            <br>
+            <div>
+                <label for="categoryMatch">Shoda:</label>
+                <select id="categoryMatch">
+                    <option value="max">Celá</option>/*všechny shodující ingredience*/
+                    <option value="mid">Poloviční</option>/*přiměřený poměr mezi chybejícími a nechybejícími ingrediencemi*/
+                    <option value="min">Minimální</option>/*pouze jedna ingredience*/
+                </select>
+            </div>
+            <h2>Ingredience</h2>
+            <button id="clear" onclick="clearBoxes()">Žádné ingredience</button>
+            <button id="all" onclick="checkAll()">Všechny ingredience</button>
+            <br>
+            <div id="ingredients"></div>
+            <button id="searchRecipes">Vyhledat recepty</button>
+        </div>
+        <div id="recipes-section" class="hidden">
+            <h2>Výsledky</h2>
+            <ul id="recipes"></ul>
+            <button id="backToFilters">Zpět</button>
+        </div>
+        <div id="recipe-detail-section" class="hidden">
+            <h2>Detail receptu</h2>
+            <p id="recipeDetail"></p>
+            <button id="backToRecipes">Zpět</button>
+        </div>
+    </div>
+
+    <script>
+        function clearBoxes(){
+            var checkboxes = document.querySelectorAll(`#ingredients input[type="checkbox"]`);
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = false;
+            });
+            var quantityInputs = document.querySelectorAll(`#ingredients input[type="number"]`);
+            quantityInputs.forEach(function(input) {
+                input.value = 1;
+                input.style.display = "none";
+            });
+        }
+
+        function checkAll(){
+            var checkboxes = document.querySelectorAll(`#ingredients input[type="checkbox"]`);
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = true;
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const ingredientContainer = document.getElementById("ingredients");
+            const recipesSection = document.getElementById("recipes-section");
+            const filterSection = document.getElementById("filter-section");
+            const recipeDetailSection = document.getElementById("recipe-detail-section");
+            const recipesList = document.getElementById("recipes");
+            const recipeDetail = document.getElementById("recipeDetail");
+            const categorySelect = document.getElementById("category");
+            const darkModeToggle = document.getElementById("darkModeToggle");
+
+            let recipes = [];
+            let ingredients = ["Test Ingredient 1", "Test Ingredient 2"];
+            let categories = [];
+
+            // Fetch categories from backend
+            try {
+                const categoriesResponse = await fetch("/categories");
+                categories = await categoriesResponse.json();
+                categories.forEach(category => {
+                    const option = document.createElement("option");
+                    option.value = category.name;
+                    option.textContent = category.name;
+                    categorySelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Chyba při načítání kategorií:', error);
+            }
+
+            // Fetch ingredients from backend and add them
+            try {
+                const ingredientsResponse = await fetch("/ingredients");
+                const ingredients = await ingredientsResponse.json();
+                ingredients.forEach(ingredient => {
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.value = ingredient.name;
+                    checkbox.id = `ingredient-${ingredient.name}`;
+                    const label = document.createElement("label");
+                    label.htmlFor = `ingredient-${ingredient.name}`;
+                    label.textContent = ingredient.name;
+                    const quantityInput = document.createElement("input");
+                    quantityInput.type = "number";
+                    quantityInput.min = "1";
+                    quantityInput.value = "1";
+                    quantityInput.id = `quantity-${ingredient.name}`;
+                    quantityInput.className = "quantity";
+                    quantityInput.style.display = "none";
+
+//checkbox.addEventListener("change", () => {
+//    quantityInput.style.display = checkbox.checked ? "inline-block" : "none";
+//});
+
+ingredientContainer.appendChild(checkbox);
+ingredientContainer.appendChild(label);
+ingredientContainer.appendChild(quantityInput);
+ingredientContainer.appendChild(document.createElement("br"));
+});
+
+} catch (error) {
+console.error('Chyba při načítání ingrediencí:', error);
+}
+
+// Fetch recipes from backend
+try {
+const recipesResponse = await fetch("/recipes");
+recipes = await recipesResponse.json();
+} catch (error) {
+console.error('Chyba při načítání receptů:', error);
+}
+
+document.getElementById("searchRecipes").addEventListener("click", () => {
+const selectedIngredients = Array.from(document.querySelectorAll("#ingredients input[type='checkbox']:checked"))
+.map(input => ({
+    name: input.value
+}));
+const noIngredientsSelected = selectedIngredients.length === 0;
+const selectedCategory = document.getElementById("category").value;
+
+
+const selectedValue = document.getElementById("categoryMatch").value;
+if(selectedCategory=="max"){
+console.log("max");
+                }
+                if(selectedCategory=="mid"){
+                    console.log("mid");
+                }
+                if(selectedCategory=="min"){
+                    console.log("min");
+                }
+
+                const filteredRecipes = recipes.filter(recipe => {
+                    const hasAllIngredients = recipe.ingredients.every(ing => selectedIngredients.some(selIng => selIng.name === ing));
+                    return hasAllIngredients && (selectedCategory === "Vše" || recipe.category === selectedCategory);
+                });
+
+                recipesList.innerHTML = "";
+                if (!noIngredientsSelected){
+                    filteredRecipes.forEach(recipe => {
+                    const li = document.createElement("li");
+                    li.textContent = recipe.name;
+                    li.addEventListener("click", () => {//----------------------------------------------------------------------------------------------------------------------------
+                        const ingrediences = recipe.ingredients
+                        const formattedIngredients = ingrediences.map(ing => `<p>${ing}</p>`).join("");
+                        const div = document.createElement("div");
+                        div.innerHTML = `<h2>${recipe.name}</h2><br><h3><b>Potřebné Ingredience</b></h3><br>` + formattedIngredients + `<br> <h3>Kategorie receptu</h3>
+                                                        ${recipe.category} <br><br>`;
+                        div.id = "square";
+                        div.classList.add("receipe-div");
+
+                        const text = recipe.steps;
+                        const sentences = text.split('.').filter(sentence => sentence.trim() !== "");
+                        const formattedText = sentences.map((sentence, index) => `<p><b>${index + 1}.</b> ${sentence.trim()}.</p>`).join("");
+                        const div2 = document.createElement("div");
+                        div2.innerHTML = `<br><h3><b>Postup</b></h3>` + formattedText;
+                        div2.classList.add("receipe-div");
+
+                        recipeDetail.appendChild(div);
+                        recipeDetail.appendChild(div2);
+                        recipeDetailSection.classList.remove("hidden");
+                        recipesSection.classList.add("hidden");
+                    });
+                    recipesList.appendChild(li);
+
+                });
+                }else{
+                    const div = document.createElement("div");
+                    div.textContent = "Není vybrána žádná ingredience";
+                    recipesList.appendChild(div);
+                }
+
+                recipesSection.classList.remove("hidden");
+                filterSection.classList.add("hidden");
+            });
+
+            document.getElementById("backToFilters").addEventListener("click", () => {
+                recipesSection.classList.add("hidden");
+                filterSection.classList.remove("hidden");
+            });
+
+            document.getElementById("backToRecipes").addEventListener("click", () => {
+                recipeDetailSection.classList.add("hidden");
+                recipesSection.classList.remove("hidden");
+                const divs = document.querySelectorAll(".receipe-div");
+                divs.forEach(div => div.remove());
+            });
+
+            // Dark mode toggle
+            darkModeToggle.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                darkModeToggle.textContent = document.body.classList.contains("dark-mode") ? "Light Mode" : "Dark Mode";
+            });
+        });
+    </script>
+</body>
+</html>
+
